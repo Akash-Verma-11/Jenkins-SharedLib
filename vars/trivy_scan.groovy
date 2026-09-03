@@ -1,15 +1,34 @@
-def call() {
+def call(Map config = [:]) {
 
-    sh '''
+    if (config.image) {
+
+        echo "======================================"
+        echo "Trivy Docker Image Security Scan"
+        echo "Image: ${config.image}"
+        echo "======================================"
+
+        sh """
+            trivy image \
+              --scanners vuln \
+              --severity HIGH,CRITICAL \
+              --exit-code 1 \
+              --no-progress \
+              ${config.image}
+        """
+
+    } else {
+
         echo "======================================"
         echo "Trivy Filesystem Security Scan"
         echo "======================================"
 
-        trivy fs \
-          --scanners vuln,secret,misconfig \
-          --severity HIGH,CRITICAL \
-          --exit-code 1 \
-          --no-progress \
-          .
-    '''
+        sh '''
+            trivy fs \
+              --scanners vuln,secret,misconfig \
+              --severity HIGH,CRITICAL \
+              --exit-code 1 \
+              --no-progress \
+              .
+        '''
+    }
 }
