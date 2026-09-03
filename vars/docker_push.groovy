@@ -1,12 +1,13 @@
 def call(Map config = [:]) {
     def imageName = config.imageName ?: error("Image name is required")
     def imageTag = config.imageTag ?: 'latest'
-    def credentials = config.docker ?: 'docker-hub-credentials'
+    // Storing the credentials ID in the 'credentials' variable
+    def credentials = config.credentials ?: 'docker-hub-credentials'
     
     echo "Pushing Docker image: ${imageName}:${imageTag}"
     
     withCredentials([usernamePassword(
-        credentialsId: docker,
+        credentialsId: credentials, // <-- FIXED: Use the variable defined above
         usernameVariable: 'dockerhubuser',
         passwordVariable: 'dockerhubpass'
     )]) {
